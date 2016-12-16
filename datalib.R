@@ -40,7 +40,17 @@ getDataForPlot <- function(){
     }
     
     #read the local subsetted file
-    return_data <- read.table(file = s_EPC_subset_path, header = TRUE, sep = ";")
+    data <- read.table(file = s_EPC_subset_path, header = TRUE, sep = ";")
+    
+    #Merge Date and Time columns into POSIXct DateTime column and append remaining columns
+    return_data <- data.frame(DataTime = as.POSIXct(paste(data$Date, data$Time, sep = " "), format = "%m/%d/%Y %H:%M:%S"),
+                              Global_active_power = data$Global_active_power,
+                              Global_reactive_power = data$Global_reactive_power,
+                              Voltage = data$Voltage,
+                              Global_intensity = data$Global_intensity,
+                              Sub_metering_1 = data$Sub_metering_1,
+                              Sub_metering_2 = data$Sub_metering_2,
+                              Sub_metering_3 = data$Sub_metering_3)
 
     return_data
 }

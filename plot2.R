@@ -6,5 +6,5 @@ plot2 <- function(){
     #load data script
     source(file.path(s_Script_Dir, "datalib.R"))
     
-    hist(getDataForPlot()$Global_active_power)
+    plot(getDataForPlot()$DateTime, getDataForPlot()$Global_active_power, type = "l")
 }
