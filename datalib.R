@@ -1,7 +1,8 @@
 getDataForPlot <- function(reload = FALSE,
-                           filter_dates = c("2/1/2007", "2/2/2007")){
+                           filter_dates = c("2007-02-01", "2007-02-02")){
     # This function returns subset of Electric power consumtion (EPC) data that includes
     # only dates 2007-02-01 and 2007-02-02
+    # the file stores date as d/m/yyyy
     
     # This function will also store the subsetted data in a local file for the future use
     
@@ -38,21 +39,21 @@ getDataForPlot <- function(reload = FALSE,
 
         #release the temp file
         unlink(s_temp_EPC_file)
-        
+
         # apply date filter
         if(length(filter_dates) > 0){
-            raw_data <- subset(raw_data, Date %in% filter_dates)
+            raw_data <- subset(raw_data, as.Date(Date, format = "%d/%m/%Y") %in% as.Date(filter_dates))
         }
         
         #save data in  filw in local directory
-        write.table(raw_data, file = s_EPC_subset_path, sep = ";")
+        write.table(raw_data, file = s_EPC_subset_path, sep = ";", row.names = FALSE)
     }
     
     #read the local subsetted file
     data <- read.table(file = s_EPC_subset_path, header = TRUE, sep = ";")
-    
+
     #Merge Date and Time columns into POSIXct DateTime column and append remaining columns
-    return_data <- data.frame(DateTime = as.POSIXct(paste(data$Date, data$Time, sep = " "), format = "%m/%d/%Y %H:%M:%S"),
+    return_data <- data.frame(DateTime = as.POSIXct(paste(data$Date, data$Time, sep = " "), format = "%d/%m/%Y %H:%M:%S"),
                               Global_active_power = data$Global_active_power,
                               Global_reactive_power = data$Global_reactive_power,
                               Voltage = data$Voltage,

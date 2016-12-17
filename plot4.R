@@ -6,12 +6,12 @@ plot4 <- function(){
     #load data script
     source(file.path(s_Script_Dir, "datalib.R"))
     
+    #initiate windows device
+    windows()
+    
     #get plot data as data.frame
     plot_data <- getDataForPlot()
-    
-    #initialize PNP device
-    png(filename = file.path(s_Script_Dir, "plot4.png"), width = 480, height = 480)
-    
+
     #set plot area as 2x2
     par(mfrow = c(2, 2))
     
@@ -31,6 +31,10 @@ plot4 <- function(){
     #create third plot in the lower right corner
     plot(plot_data$Global_reactive_power ~ plot_data$DateTime, type = "l", xlab = "datetime", ylab = "Global_reactive_power")
     
+    #copy plot from window to png device
+    dev.copy(png, filename = file.path(s_Script_Dir, "plot4.png"), width = 480, height = 480)
+    
     #release PNG device and store the file
+    dev.off(dev.prev())
     dev.off()
 }
