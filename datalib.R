@@ -44,7 +44,7 @@ getDataForPlot <- function(reload = FALSE,
             raw_data <- subset(raw_data, Date %in% filter_dates)
         }
         
-        
+        #save data in  filw in local directory
         write.table(raw_data, file = s_EPC_subset_path, sep = ";")
     }
     
