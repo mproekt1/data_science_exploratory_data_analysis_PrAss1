@@ -1,4 +1,5 @@
-getDataForPlot <- function(){
+getDataForPlot <- function(reload = FALSE,
+                           filter_dates = c("2/1/2007", "2/2/2007")){
     # This function returns subset of Electric power consumtion (EPC) data that includes
     # only dates 2007-02-01 and 2007-02-02
     
@@ -25,25 +26,33 @@ getDataForPlot <- function(){
     s_EPC_subset_path <- file.path(s_Script_Dir, s_EPC_subset_file)
     
     #does the subsetfile exist
-    if(!file.exists(s_EPC_subset_path)){
+    if(!file.exists(s_EPC_subset_path) || reload){
         #create a file to temporary store downloaded file
         s_temp_EPC_file <- tempfile()
 
         #download data file into temp file
         download.file(s_EPC_archive_URL, s_temp_EPC_file)
         
-        #create data.frame from the file and subset to include only 2007-02-01 and 2007-02-02 dates
-        write.table(subset(read.table(unz(s_temp_EPC_file, s_EPC_archive_file), sep = ";", header = TRUE), Date %in% c("2/1/2007", "2/2/2007")), file = s_EPC_subset_path, sep = ";")
+        #create data.frame from the file
+        raw_data <- read.table(unz(s_temp_EPC_file, s_EPC_archive_file), sep = ";", header = TRUE)
 
         #release the temp file
         unlink(s_temp_EPC_file)
+        
+        # apply date filter
+        if(length(filter_dates) > 0){
+            raw_data <- subset(raw_data, Date %in% filter_dates)
+        }
+        
+        
+        write.table(raw_data, file = s_EPC_subset_path, sep = ";")
     }
     
     #read the local subsetted file
     data <- read.table(file = s_EPC_subset_path, header = TRUE, sep = ";")
     
     #Merge Date and Time columns into POSIXct DateTime column and append remaining columns
-    return_data <- data.frame(DataTime = as.POSIXct(paste(data$Date, data$Time, sep = " "), format = "%m/%d/%Y %H:%M:%S"),
+    return_data <- data.frame(DateTime = as.POSIXct(paste(data$Date, data$Time, sep = " "), format = "%m/%d/%Y %H:%M:%S"),
                               Global_active_power = data$Global_active_power,
                               Global_reactive_power = data$Global_reactive_power,
                               Voltage = data$Voltage,

@@ -6,5 +6,11 @@ plot1 <- function(){
     #load data script
     source(file.path(s_Script_Dir, "datalib.R"))
     
-    hist(getDataForPlot()$Global_active_power)
+    plot_data <- getDataForPlot()
+    
+    png(filename = file.path(s_Script_Dir, "plot1.png"), width = 480, height = 480)
+    
+    hist(plot_data$Global_active_power, col = "red", xlab = "Global Active Power (kilowatts)", main = "Global Active Power")
+    
+    dev.off()
 }
